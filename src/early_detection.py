@@ -56,16 +56,29 @@ def run_early_detection_experiment(
         stages = DEFAULT_STAGES
     stages = sorted(set(stages))
     
+    if text_col not in df.columns:
+        raise ValueError(f"Text column '{text_col}' not found in dataset. Available columns: {list(df.columns)}")
+    if label_col not in df.columns:
+        raise ValueError(f"Label column '{label_col}' not found in dataset. Available columns: {list(df.columns)}")
+
     clean_df = df[[text_col, label_col]].dropna().copy()
     clean_df[text_col] = clean_df[text_col].astype(str)
     clean_df = clean_df[clean_df[text_col].str.strip() != ""]
     
+    if len(clean_df) < 10:
+        raise ValueError(f"Dataset has only {len(clean_df)} valid rows after cleaning. Minimum 10 rows required for evaluation.")
+
+    # Determine safe stratification
+    class_counts = clean_df[label_col].value_counts()
+    min_class_count = class_counts.min() if len(class_counts) > 0 else 0
+    strat = clean_df[label_col] if min_class_count >= 2 else None
+
     # Train / test split using identical held-out test identities across all stages
     train_df, test_df = train_test_split(
         clean_df,
         test_size=test_size,
         random_state=random_seed,
-        stratify=clean_df[label_col],
+        stratify=strat,
     )
     
     stage_results = []

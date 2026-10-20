@@ -6,7 +6,7 @@ from __future__ import annotations
 import streamlit as st
 import pandas as pd
 
-from src.config import APP_NAME
+from src.config import APP_NAME, DATA_DIR
 from src.theme import get_tokens
 from src.utils import (
     inject_css,
@@ -17,7 +17,7 @@ from src.utils import (
     badge_row,
     footer,
 )
-from src.data_loader import get_session_dataset
+from src.data_loader import get_session_dataset, set_session_dataset, create_sample_research_dataset
 from src.early_detection import run_early_detection_experiment, DEFAULT_STAGES
 from src.training import ALGORITHM_REGISTRY
 
@@ -46,18 +46,65 @@ badge_row([
 
 df = get_session_dataset()
 if df is None:
-    st.warning("⚠️ No active dataset found. Please load or upload a dataset in the Data Ingestion Studio first.")
-    if st.button("📥 Open Data Ingestion Studio", type="primary"):
-        st.switch_page("pages/2_Data_Upload.py")
+    st.markdown(
+        f"""
+        <div class="enterprise-card" style="margin-bottom: 1.2rem;">
+            <div style="font-weight: 700; color: {tokens['primary']}; font-size: 1.05rem;">No Active Dataset in Workspace</div>
+            <div style="font-size: 0.85rem; color: {tokens['text_secondary']}; margin: 0.3rem 0 1rem 0;">
+                Early detection experiments require a labeled dataset with text content and ground truth labels. Load the built-in curated corpus or upload your own.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    col_l1, col_l2 = st.columns(2)
+    with col_l1:
+        if st.button("📥 Load TruthLens Curated Benchmark Corpus (70 Rows)", type="primary", use_container_width=True):
+            corpus_p = DATA_DIR / "truthlens_research_corpus.csv"
+            if corpus_p.exists():
+                df_curated = pd.read_csv(corpus_p)
+            else:
+                df_curated = create_sample_research_dataset()
+            set_session_dataset(df_curated, name="truthlens_research_corpus.csv", metadata={"text_column": "text", "label_column": "label"})
+            st.success("Loaded TruthLens Research Corpus into active workspace!")
+            st.rerun()
+    with col_l2:
+        if st.button("📂 Open Data Ingestion Studio", type="secondary", use_container_width=True):
+            st.switch_page("pages/2_Data_Upload.py")
     st.stop()
 
-meta = st.session_state.get("active_df_meta", {})
-text_col = meta.get("text_column", "text" if "text" in df.columns else df.columns[0])
-label_col = meta.get("label_column", "label" if "label" in df.columns else (df.columns[1] if len(df.columns) > 1 else df.columns[0]))
+# ─── Dataset & Column Mapping ────────────────────────────────────────────────
+cols = list(df.columns)
+text_candidates = ["text", "article", "content", "statement", "body", "news", "headline", "title"]
+def_t_idx = next((i for i, c in enumerate(cols) if any(kw in str(c).lower() for kw in text_candidates)), 0)
 
-st.info(f"📂 Research Dataset: **{st.session_state.get('active_df_name', 'dataset.csv')}** ({len(df):,} articles). Text: `{text_col}`, Label: `{label_col}`.")
+label_candidates = ["label", "target", "class", "category", "ground_truth"]
+def_l_idx = next((i for i, c in enumerate(cols) if any(kw in str(c).lower() for kw in label_candidates)), min(1, len(cols) - 1))
+
+meta = st.session_state.get("active_df_meta", {})
+preferred_text = meta.get("text_column")
+preferred_label = meta.get("label_column")
+
+if preferred_text and preferred_text in cols:
+    def_t_idx = cols.index(preferred_text)
+if preferred_label and preferred_label in cols:
+    def_l_idx = cols.index(preferred_label)
+
+st.markdown("##### 📁 Active Corpus Configuration")
+col_sel1, col_sel2, col_switch = st.columns([2, 2, 1.2])
+with col_sel1:
+    text_col = st.selectbox("Text Feature Column", options=cols, index=def_t_idx)
+with col_sel2:
+    label_col = st.selectbox("Target Label Column", options=cols, index=def_l_idx)
+with col_switch:
+    st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+    if st.button("🔄 Switch / Upload", use_container_width=True):
+        st.switch_page("pages/2_Data_Upload.py")
+
+st.caption(f"Active Dataset: **{st.session_state.get('active_df_name', 'dataset.csv')}** ({len(df):,} rows)")
 
 # ─── Experimental Design Selection ───────────────────────────────────────────
+st.markdown("---")
 st.markdown("##### 1. Select Methodological Experimental Design")
 
 exp_c1, exp_c2 = st.columns(2)
@@ -133,19 +180,24 @@ if st.button("🚀 Execute Early Detection Experiment", type="primary", use_cont
         def cb(pct, msg):
             p_bar.progress(int(pct * 100), text=f"{exp_name}: {msg}")
 
-        exp_result = run_early_detection_experiment(
-            df=df,
-            text_col=text_col,
-            label_col=label_col,
-            experiment_type=exp_type,
-            stages=selected_stages,
-            algorithm_name=algo_name,
-            test_size=test_ratio,
-            random_seed=42,
-            progress_callback=cb,
-        )
-        p_bar.progress(100, text=f"{exp_name} finished!")
-        results_dict[exp_type] = exp_result
+        try:
+            exp_result = run_early_detection_experiment(
+                df=df,
+                text_col=text_col,
+                label_col=label_col,
+                experiment_type=exp_type,
+                stages=selected_stages,
+                algorithm_name=algo_name,
+                test_size=test_ratio,
+                random_seed=42,
+                progress_callback=cb,
+            )
+            p_bar.progress(100, text=f"{exp_name} finished!")
+            results_dict[exp_type] = exp_result
+        except Exception as exc:
+            p_bar.empty()
+            st.error(f"❌ Error during {exp_name}: {exc}")
+            st.stop()
 
     st.session_state["last_early_detection"] = results_dict
     st.success("Early detection experiments successfully executed!")
