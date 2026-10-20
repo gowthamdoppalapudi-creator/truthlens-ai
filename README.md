@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TruthLens AI — An Intelligent Fake News Detection and Early Detection Research Platform
 
 ![TruthLens AI Logo](assets/truthlens_logo.png)
@@ -192,3 +193,7 @@ TruthLens AI supports two distinct experimental protocols:
 - **Original Project Author:** Khush Pawar (TruthLens Fake News Detection NLP project)
 - **Pretrained Baseline Models:** Trained on combined ISOT Fake/Real News and Kaggle datasets (44,275 articles) and validated on an unseen external set of 45,757 articles.
 - **Preserved Artifacts:** All original model binaries (`final_svc_model.pkl`, `tfidf_vectorizer.pkl`), evaluation notes (`metrics.json`), and exploration notebooks (`NLP.ipynb`) have been fully preserved and backed up in `fake-news-detection-nlp-main/` and `backup_original/`.
+=======
+# truthlens-ai
+TruthLens.ai — Multimodal Fake News Detection and AI-Powered Media Analysis
+>>>>>>> f952161f3b36ac08f0c48d133ccbfc3b22702bb1
