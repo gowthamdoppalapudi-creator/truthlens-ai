@@ -84,7 +84,7 @@ if btn_fetch and url_input.strip():
         render_verdict_card(
             status="FAKE" if is_fake else "REAL",
             confidence=conf,
-            subtitle=f"{vtext} · Domain: {res.get('domain', 'Unknown')} · Latency: {latency_str}",
+            subtitle=f"{vtext} · Domain: {res.get('domain', 'Unknown')} · Latency: {elapsed}",
         )
 
         # Extracted Metadata

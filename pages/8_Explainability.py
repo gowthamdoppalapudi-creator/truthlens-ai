@@ -1,27 +1,41 @@
 """
-pages/9_Explainability.py — Model explainability, global feature coefficients, and per-article term attribution.
+8_Explainability.py — MultiModal AI Studio Model Explainability & Feature Attribution.
+Inspect global linear coefficients and examine how specific vocabulary tokens drive classification decisions.
 """
 from __future__ import annotations
 import streamlit as st
 import pandas as pd
 
 from src.config import APP_NAME
-from src.utils import inject_css, page_header, stat_card, badge_row, footer
+from src.theme import get_tokens
+from src.utils import (
+    inject_css,
+    render_sidebar_brand,
+    render_sidebar_profile,
+    render_top_header,
+    page_header,
+    badge_row,
+    footer,
+)
 from src.model_registry import list_models, get_model
 from src.explainability import get_global_feature_importance, explain_single_prediction
 
-
 st.set_page_config(
     page_title=f"Explainability | {APP_NAME}",
-    page_icon="💡",
+    page_icon="🔍",
     layout="wide",
 )
 inject_css()
+render_sidebar_brand()
+render_sidebar_profile()
+render_top_header()
 
 page_header(
     "Model Explainability & Feature Attribution",
     "Inspect global linear coefficients and examine how specific vocabulary tokens drive individual classification decisions.",
 )
+tokens = get_tokens()
+
 badge_row([
     "Global TF-IDF Coefficients",
     "Local Feature Attribution",
@@ -31,7 +45,7 @@ badge_row([
 
 models = list_models()
 if not models:
-    st.error("No registered models found. Please train a model in the Training Studio.")
+    st.error("No registered models found. Please train or register a model in the Model Evaluation Lab.")
     st.stop()
 
 # Model Selector
@@ -51,11 +65,9 @@ model_entry = get_model(selected_model_id)
 
 tab_global, tab_local = st.tabs(["🌐 Global Feature Weights", "🔎 Local Single-Article Attribution"])
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Tab 1: Global Feature Weights
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Tab 1: Global Feature Weights ───────────────────────────────────────────
 with tab_global:
-    st.markdown("### Global Vocabulary Feature Influences")
+    st.markdown("##### Global Vocabulary Feature Influences")
     st.caption("Visualizing the highest magnitude linear coefficients associated with REAL versus FAKE classifications.")
 
     top_n = st.slider("Number of Top Features to Display per Class", min_value=10, max_value=30, value=15)
@@ -68,22 +80,20 @@ with tab_global:
 
         col_pos_tbl, col_neg_tbl = st.columns(2)
         with col_pos_tbl:
-            st.markdown(f"#### Features Favoring: **{feat_res['pos_label']}**")
+            st.markdown(f"###### Features Favoring: **{feat_res['pos_label']}**")
             st.dataframe(feat_res["pos_features"].style.format({"weight": "{:+.4f}"}), use_container_width=True)
 
         with col_neg_tbl:
-            st.markdown(f"#### Features Favoring: **{feat_res['neg_label']}**")
+            st.markdown(f"###### Features Favoring: **{feat_res['neg_label']}**")
             st.dataframe(feat_res["neg_features"].style.format({"weight": "{:+.4f}"}), use_container_width=True)
     elif feat_res["status"] == "unsupported":
         st.warning(feat_res["message"])
     else:
         st.error(feat_res["message"])
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Tab 2: Local Single-Article Attribution
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Tab 2: Local Single-Article Attribution ─────────────────────────────────
 with tab_local:
-    st.markdown("### Per-Article Vocabulary Attribution")
+    st.markdown("##### Per-Article Vocabulary Attribution")
     st.caption("Deconstruct a specific article to see which tokens directly influenced the decision margin.")
 
     last_text = st.session_state.get("last_analyzed_text", "")
@@ -119,17 +129,14 @@ with tab_local:
             else:
                 st.warning(local_res.get("message", "Unable to compute local feature explanation."))
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Scientific Disclaimers
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Scientific Disclaimers ──────────────────────────────────────────────────
 st.markdown("---")
-st.markdown("### 🔬 Scientific Interpretation & Ethics")
+st.markdown("##### 🔬 Scientific Interpretation & Ethics")
 st.info(
-    "💡 **Key Scientific Distinctions:**\n"
-    "1. **Correlation vs. Factuality:** A word like *'reuters'* or *'stated'* having a high positive weight reflects editorial conventions in the training corpus, not absolute truth. Conversely, emotional adjectives like *'shocking'* frequently occur in tabloid clickbait.\n"
-    "2. **Context Blindness:** Linear TF-IDF models treat n-grams as additive weights and cannot understand nuance, irony, or negation (e.g., 'not a hoax').\n"
-    "3. **Never Cite as Proof:** High feature attribution must never be cited as forensic proof of factual fraud or authenticity."
+    "💡 **Key Scientific Distinctions:**\n\n"
+    "1. **Correlation vs. Factuality:** A word having a high positive weight reflects editorial conventions in the training corpus, not absolute truth.\n"
+    "2. **Context Blindness:** Linear TF-IDF models treat n-grams additively and cannot reliably interpret negation or deep semantic context without transformer embeddings.\n"
+    "3. **Never Cite as Proof:** Feature attributions provide diagnostic interpretability, not definitive legal or forensic proof."
 )
 
-st.markdown("---")
 footer()

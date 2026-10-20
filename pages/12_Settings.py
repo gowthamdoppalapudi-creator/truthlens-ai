@@ -1,5 +1,5 @@
 """
-9_Settings.py — MultiModal AI Studio Platform Configuration & System Settings.
+12_Settings.py — MultiModal AI Studio Platform Configuration & System Settings.
 Manages theme modes, model defaults, forensic hyperparameters, and hardware telemetry.
 """
 from __future__ import annotations

@@ -3,7 +3,7 @@
     "id": "benchmark_logreg",
     "name": "TruthLens \u2014 Logistic Regression (TF-IDF)",
     "type": "pipeline",
-    "pipeline_path": "F:\\truthlens.ai\\models\\TruthLens___Logistic_Regression__TF-IDF_.pkl",
+    "pipeline_path": "models/TruthLens___Logistic_Regression__TF-IDF_.pkl",
     "algorithm": "Logistic Regression",
     "text_col": "text",
     "label_mapping": {
@@ -181,7 +181,7 @@
     "id": "benchmark_mnb",
     "name": "TruthLens \u2014 Multinomial Naive Bayes (TF-IDF)",
     "type": "pipeline",
-    "pipeline_path": "F:\\truthlens.ai\\models\\TruthLens___Multinomial_Naive_Bayes__TF-IDF_.pkl",
+    "pipeline_path": "models/TruthLens___Multinomial_Naive_Bayes__TF-IDF_.pkl",
     "algorithm": "Multinomial Naive Bayes",
     "text_col": "text",
     "label_mapping": {
@@ -359,7 +359,7 @@
     "id": "benchmark_rf",
     "name": "TruthLens \u2014 Random Forest Classifier (TF-IDF)",
     "type": "pipeline",
-    "pipeline_path": "F:\\truthlens.ai\\models\\TruthLens___Random_Forest_Classifier__TF-IDF_.pkl",
+    "pipeline_path": "models/TruthLens___Random_Forest_Classifier__TF-IDF_.pkl",
     "algorithm": "Random Forest",
     "text_col": "text",
     "label_mapping": {
@@ -599,7 +599,7 @@
     "id": "benchmark_pac",
     "name": "TruthLens \u2014 Passive Aggressive Classifier (TF-IDF)",
     "type": "pipeline",
-    "pipeline_path": "F:\\truthlens.ai\\models\\TruthLens___Passive_Aggressive_Classifier__TF-IDF_.pkl",
+    "pipeline_path": "models/TruthLens___Passive_Aggressive_Classifier__TF-IDF_.pkl",
     "algorithm": "Passive Aggressive Classifier",
     "text_col": "text",
     "label_mapping": {

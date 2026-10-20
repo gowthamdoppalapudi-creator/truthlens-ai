@@ -1,16 +1,25 @@
 """
-pages/10_Research_Reports.py — Research report generation, preview, and export center.
+10_Research_Reports.py — MultiModal AI Studio Scientific Research Report Generator.
+Export structured, peer-review-ready technical reports documenting methodology, reproducibility seeds, empirical metrics, and limitations.
 """
 from __future__ import annotations
+import json
 import streamlit as st
 import pandas as pd
-import json
 
 from src.config import APP_NAME
-from src.utils import inject_css, page_header, stat_card, badge_row, footer
+from src.theme import get_tokens
+from src.utils import (
+    inject_css,
+    render_sidebar_brand,
+    render_sidebar_profile,
+    render_top_header,
+    page_header,
+    badge_row,
+    footer,
+)
 from src.model_registry import list_models, get_model
 from src.report_generator import generate_markdown_report, save_research_report
-
 
 st.set_page_config(
     page_title=f"Research Reports | {APP_NAME}",
@@ -18,11 +27,16 @@ st.set_page_config(
     layout="wide",
 )
 inject_css()
+render_sidebar_brand()
+render_sidebar_profile()
+render_top_header()
 
 page_header(
     "Scientific Research Report Generator",
     "Export structured, peer-review-ready technical reports documenting methodology, reproducibility seeds, empirical metrics, and limitations.",
 )
+tokens = get_tokens()
+
 badge_row([
     "Academic Markdown Deliverables",
     "Machine-Readable JSON Bundles",
@@ -32,13 +46,11 @@ badge_row([
 
 models = list_models()
 if not models:
-    st.error("No registered models found. Train a model in the Training Studio to compile a research report.")
+    st.error("No registered models found. Train or evaluate a model in the Model Evaluation Lab to compile a research report.")
     st.stop()
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Experiment / Model Selector
-# ──────────────────────────────────────────────────────────────────────────────
-st.markdown("### 1. Select Experiment or Model Checkpoint")
+# ─── Experiment / Model Selector ─────────────────────────────────────────────
+st.markdown("##### 1. Select Experiment or Model Checkpoint")
 
 model_options = {m["id"]: f"{m['name']} — {m.get('algorithm', 'Model')} (ID: {m['id']})" for m in models}
 default_id = st.session_state.get("active_model_id", models[0]["id"])
@@ -53,11 +65,9 @@ selected_id = st.selectbox(
 )
 model_entry = get_model(selected_id)
 
-# Check if early detection data exists in session state to embed
 early_data = st.session_state.get("last_early_detection", {})
 early_df = None
 if early_data:
-    # Pick Experiment A summary if available
     first_key = list(early_data.keys())[0]
     early_df = early_data[first_key].get("summary_df")
 
@@ -84,15 +94,11 @@ experiment_package = {
     "early_detection_results": early_df,
 }
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Report Compilation & Export
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Report Compilation & Export ─────────────────────────────────────────────
 st.markdown("---")
-st.markdown("### 2. Export Structured Research Deliverables")
+st.markdown("##### 2. Export Structured Research Deliverables")
 
 report_md = generate_markdown_report(experiment_package)
-
-# Save to disk as well
 md_path, json_path = save_research_report(experiment_package)
 
 btn_c1, btn_c2, btn_c3 = st.columns(3)
@@ -131,14 +137,11 @@ with btn_c3:
 
 st.caption(f"📁 Reports automatically archived to workspace: `{md_path}` and `{json_path}`")
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Interactive Markdown Preview
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Interactive Markdown Preview ────────────────────────────────────────────
 st.markdown("---")
-st.markdown("### 3. Report Live Preview")
+st.markdown("##### 3. Report Live Preview")
 
 with st.container():
     st.markdown(report_md)
 
-st.markdown("---")
 footer()

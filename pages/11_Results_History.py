@@ -1,5 +1,5 @@
 """
-8_Results_History.py — MultiModal AI Studio Analysis Results History & Audit Trail.
+11_Results_History.py — MultiModal AI Studio Analysis Results History & Audit Trail.
 Tracks all inference and evaluation events across modalities with search, filtering, and CSV export.
 """
 from __future__ import annotations
@@ -20,7 +20,7 @@ from src.history_tracker import get_history, clear_history
 
 st.set_page_config(
     page_title=f"Results History | {APP_NAME}",
-    page_icon="⏱️",
+    page_icon="🕒",
     layout="wide",
 )
 inject_css()

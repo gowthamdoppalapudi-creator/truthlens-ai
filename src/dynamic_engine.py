@@ -198,19 +198,22 @@ def quick_adapt_to_dataset(
     model_path = MODELS_DIR / f"{safe_name}.pkl"
     joblib.dump({"pipeline": pipe, "metadata": config_info}, model_path)
 
-    registered_id = register_model(
-        pipeline=pipe,
+    registered_entry = register_model(
         name=model_name,
-        algorithm=algorithm,
-        metrics=metrics,
-        dataset_info=f"Dynamic Ingestion ({len(df):,} rows)",
-        text_col=text_col,
-        label_col=label_col,
-        tfidf_config={"max_features": TFIDF_MAX_FEATURES, "ngram_range": [1, 2]},
-        test_size=test_size,
-        random_seed=random_seed,
-        class_weight="balanced",
+        pipeline_path=model_path,
+        metadata={
+            "algorithm": algorithm,
+            "metrics": metrics,
+            "dataset_info": f"Dynamic Ingestion ({len(df):,} rows)",
+            "text_col": text_col,
+            "label_col": label_col,
+            "tfidf_config": {"max_features": TFIDF_MAX_FEATURES, "ngram_range": [1, 2]},
+            "test_size": test_size,
+            "random_seed": random_seed,
+            "class_weight": "balanced",
+        },
     )
+    registered_id = registered_entry.get("id", model_name)
 
     return {
         "model_id": registered_id,

@@ -1,5 +1,5 @@
 """
-pages/8_Early_Detection.py — Early Fake News Detection Research Module.
+9_Early_Detection.py — MultiModal AI Studio Early Fake News Detection Research Module.
 Empirical investigation of classifier sensitivity across truncated article stages (10% to 100%).
 """
 from __future__ import annotations
@@ -7,23 +7,36 @@ import streamlit as st
 import pandas as pd
 
 from src.config import APP_NAME
-from src.utils import inject_css, page_header, stat_card, badge_row, footer
+from src.theme import get_tokens
+from src.utils import (
+    inject_css,
+    render_sidebar_brand,
+    render_sidebar_profile,
+    render_top_header,
+    page_header,
+    badge_row,
+    footer,
+)
 from src.data_loader import get_session_dataset
 from src.early_detection import run_early_detection_experiment, DEFAULT_STAGES
 from src.training import ALGORITHM_REGISTRY
 
-
 st.set_page_config(
     page_title=f"Early Detection | {APP_NAME}",
-    page_icon="⏱️",
+    page_icon="⚡",
     layout="wide",
 )
 inject_css()
+render_sidebar_brand()
+render_sidebar_profile()
+render_top_header()
 
 page_header(
     "Early Fake News Detection Research Engine",
     "Investigate classifier behavior when exposed strictly to early article segments (10% to 100% token availability).",
 )
+tokens = get_tokens()
+
 badge_row([
     "Truncation Diagnostics",
     "Identical Held-Out Test Set",
@@ -33,9 +46,9 @@ badge_row([
 
 df = get_session_dataset()
 if df is None:
-    st.warning("⚠️ No active dataset found. Please load or upload a dataset in the Dataset Manager first.")
-    if st.button("📁 Go to Dataset Manager", type="primary"):
-        st.switch_page("pages/3_Dataset_Manager.py")
+    st.warning("⚠️ No active dataset found. Please load or upload a dataset in the Data Ingestion Studio first.")
+    if st.button("📥 Open Data Ingestion Studio", type="primary"):
+        st.switch_page("pages/2_Data_Upload.py")
     st.stop()
 
 meta = st.session_state.get("active_df_meta", {})
@@ -44,22 +57,19 @@ label_col = meta.get("label_column", "label" if "label" in df.columns else (df.c
 
 st.info(f"📂 Research Dataset: **{st.session_state.get('active_df_name', 'dataset.csv')}** ({len(df):,} articles). Text: `{text_col}`, Label: `{label_col}`.")
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Experimental Design Selection
-# ──────────────────────────────────────────────────────────────────────────────
-st.markdown("### 1. Select Methodological Experimental Design")
+# ─── Experimental Design Selection ───────────────────────────────────────────
+st.markdown("##### 1. Select Methodological Experimental Design")
 
 exp_c1, exp_c2 = st.columns(2)
 
 with exp_c1:
     st.markdown(
-        """
-        <div class="stat-card">
-            <h4 style="margin:0; color:#6ee7f9;">🔬 Experiment A: Stage-Specific Training</h4>
-            <p style="color:#9ca3af; font-size:0.85rem; margin-top:0.4rem;">
+        f"""
+        <div class="enterprise-card">
+            <h5 style="margin:0; color:{tokens['primary']};">🔬 Experiment A: Stage-Specific Training</h5>
+            <p style="color:{tokens['text_secondary']}; font-size:0.85rem; margin-top:0.4rem;">
                 A separate classifier is trained on each partial text stage and evaluated strictly
                 against held-out test articles truncated to the same percentage.
-                Tests whether early text representations contain sufficient distinct features for learning.
             </p>
         </div>
         """,
@@ -69,10 +79,10 @@ with exp_c1:
 
 with exp_c2:
     st.markdown(
-        """
-        <div class="stat-card">
-            <h4 style="margin:0; color:#a78bfa;">📉 Experiment B: Full-Text Distribution Shift</h4>
-            <p style="color:#9ca3af; font-size:0.85rem; margin-top:0.4rem;">
+        f"""
+        <div class="enterprise-card">
+            <h5 style="margin:0; color:{tokens['accent_sage']};">📉 Experiment B: Full-Text Distribution Shift</h5>
+            <p style="color:{tokens['text_secondary']}; font-size:0.85rem; margin-top:0.4rem;">
                 A single model is trained on 100% full-length articles and evaluated against partially truncated
                 held-out articles. Evaluates real-world degradation when a standard model receives partial early text.
             </p>
@@ -83,7 +93,7 @@ with exp_c2:
     exp_b_chosen = st.checkbox("Run Experiment B (Full-Text Model Under Truncation)", value=False)
 
 st.markdown("---")
-st.markdown("### 2. Experimental Parameters")
+st.markdown("##### 2. Experimental Parameters")
 
 col_p1, col_p2, col_p3 = st.columns(3)
 
@@ -102,9 +112,7 @@ with col_p2:
 with col_p3:
     test_ratio = st.slider("Held-out Test Ratio (%)", 10, 40, 20, step=5) / 100.0
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Execution
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Execution ───────────────────────────────────────────────────────────────
 st.markdown("---")
 if st.button("🚀 Execute Early Detection Experiment", type="primary", use_container_width=True):
     chosen_types = []
@@ -142,21 +150,17 @@ if st.button("🚀 Execute Early Detection Experiment", type="primary", use_cont
     st.session_state["last_early_detection"] = results_dict
     st.success("Early detection experiments successfully executed!")
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Results & Visualizations
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Results & Visualizations ────────────────────────────────────────────────
 results_dict = st.session_state.get("last_early_detection")
 if results_dict:
     st.markdown("---")
-    st.markdown("### 📊 Empirical Truncation Results")
+    st.markdown("##### 📊 Empirical Truncation Results")
 
     for exp_type, res in results_dict.items():
-        st.markdown(f"#### {'Experiment A: Stage-Specific Training' if exp_type == 'A' else 'Experiment B: Full-Text Model Under Truncation'}")
-        
-        # Display Plotly chart
+        st.markdown(f"###### {'Experiment A: Stage-Specific Training' if exp_type == 'A' else 'Experiment B: Full-Text Model Under Truncation'}")
+
         st.plotly_chart(res["figure"], use_container_width=True)
 
-        # Display Summary Table
         summary_df = res["summary_df"]
         st.dataframe(
             summary_df.style.format({
@@ -169,7 +173,6 @@ if results_dict:
             use_container_width=True,
         )
 
-        # Download CSV
         csv_data = summary_df.to_csv(index=False).encode("utf-8")
         st.download_button(
             label=f"💾 Download Results (Experiment {exp_type} CSV)",
@@ -179,7 +182,7 @@ if results_dict:
         )
 
     st.markdown("---")
-    st.markdown("### 🔬 Methodological Discussion & Limitations")
+    st.markdown("##### 🔬 Methodological Discussion & Limitations")
     with st.expander("Read Key Limitations & Scientific Disclaimers", expanded=True):
         st.markdown(
             """
@@ -190,5 +193,4 @@ if results_dict:
             """
         )
 
-st.markdown("---")
 footer()

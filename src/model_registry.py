@@ -11,7 +11,29 @@ from typing import Any
 
 import joblib
 
-from src.config import MODELS_DIR, MODEL_REGISTRY_PATH, LEGACY_MODEL_PATH, LEGACY_VEC_PATH, LEGACY_METRICS
+from src.config import ROOT_DIR, MODELS_DIR, MODEL_REGISTRY_PATH, LEGACY_MODEL_PATH, LEGACY_VEC_PATH, LEGACY_METRICS
+
+
+def resolve_model_path(path_str: str | Path | None) -> Path:
+    """Resolve a model artifact path safely across Windows, Linux, and Cloud environments."""
+    if not path_str:
+        return Path()
+    p = Path(path_str)
+    if p.exists():
+        return p
+    # Check by filename inside MODELS_DIR
+    p_models = MODELS_DIR / p.name
+    if p_models.exists():
+        return p_models
+    # Check relative to ROOT_DIR
+    p_root = ROOT_DIR / p
+    if p_root.exists():
+        return p_root
+    # Check in fake-news-detection-nlp-main
+    p_legacy = ROOT_DIR / "fake-news-detection-nlp-main" / p.name
+    if p_legacy.exists():
+        return p_legacy
+    return p
 
 
 def _load_registry() -> list[dict]:
@@ -169,8 +191,10 @@ def load_model_for_prediction(model_id: str):
 
     if entry.get("type") == "legacy":
         import numpy as np
-        clf = joblib.load(entry["model_path"])
-        vec = joblib.load(entry["vec_path"])
+        m_path = resolve_model_path(entry.get("model_path"))
+        v_path = resolve_model_path(entry.get("vec_path"))
+        clf = joblib.load(m_path)
+        vec = joblib.load(v_path)
         classes = entry.get("classes", ["FAKE", "REAL"])
 
         def predict_fn(texts):
@@ -190,7 +214,8 @@ def load_model_for_prediction(model_id: str):
         return predict_fn, score_fn, classes, entry
 
     else:
-        bundle = joblib.load(entry["pipeline_path"])
+        pipe_path = resolve_model_path(entry.get("pipeline_path"))
+        bundle = joblib.load(pipe_path)
         pipeline = bundle["pipeline"]
         classes  = list(pipeline.classes_)
         label_mapping = entry.get("label_mapping", {})

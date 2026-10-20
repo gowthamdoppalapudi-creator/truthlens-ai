@@ -1,5 +1,5 @@
 """
-10_Help_and_Docs.py — MultiModal AI Studio Comprehensive Documentation & Guide.
+13_Help_and_Docs.py — MultiModal AI Studio Comprehensive Documentation & Guide.
 Complete user guide, algorithmic formulations, and technical architecture manual.
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ from src.utils import (
 
 st.set_page_config(
     page_title=f"Help & Docs | {APP_NAME}",
-    page_icon="ℹ️",
+    page_icon="📚",
     layout="wide",
 )
 inject_css()
@@ -38,18 +38,21 @@ with doc_tab1:
     st.markdown("### 🚀 Platform Workflow Overview")
     st.markdown(
         """
-        **TruthLens.ai** is organized into 10 cohesive modules designed for enterprise machine learning research:
+        **TruthLens.ai** is organized into 13 cohesive modules designed for enterprise machine learning research:
 
-        1. **Dashboard:** Live operational telemetry, model performance ROC curves, confusion matrix, and recent analysis runs.
-        2. **Data Upload:** Ingest custom CSV, TXT, or JSON datasets with automatic column discovery and data quality audits.
-        3. **Text Analysis:** Real-time headline and article verification with calibrated confidence gauges and decision margins.
-        4. **Image Analysis:** Error Level Analysis (ELA), RGB pixel histograms, EXIF metadata, and OCR text extraction.
-        5. **URL Analysis:** Live web news scraping via BeautifulSoup with domain trust verification and NLP scoring.
-        6. **Dataset & Batch:** High-throughput batch inference over multi-row CSVs and mixed heterogeneous media queues.
-        7. **Model Evaluation:** Held-out ROC-AUC curves, Precision-Recall curves, confusion matrices, and zero-leakage model training.
-        8. **Results History:** Searchable, filterable audit trail of all previous analysis runs with CSV export.
-        9. **Settings:** Theme preferences (Light / Dark switch), model defaults, and forensic hyperparameters.
-        10. **Help & Documentation:** Complete technical manual and architectural reference.
+        1. **Executive Dashboard:** Live operational telemetry, model performance ROC curves, confusion matrix, and recent analysis runs.
+        2. **Data Ingestion Studio:** Ingest custom CSV, TXT, or JSON datasets with automatic column discovery and data quality audits.
+        3. **Text Classification:** Real-time headline and article verification with calibrated confidence gauges and decision margins.
+        4. **Image Forensics:** Error Level Analysis (ELA), RGB pixel histograms, EXIF metadata, and OCR text extraction.
+        5. **URL Scanner:** Live web news scraping via BeautifulSoup with domain trust verification and NLP scoring.
+        6. **Dataset & Batch Scoring:** High-throughput batch inference over multi-row CSVs and mixed heterogeneous media queues.
+        7. **Model Evaluation Lab:** Held-out ROC-AUC curves, Precision-Recall curves, confusion matrices, and zero-leakage model training.
+        8. **Model Explainability:** Inspect global linear coefficients and examine how specific vocabulary tokens drive individual classification decisions.
+        9. **Early Detection:** Empirical investigation of classifier sensitivity across truncated article stages (10% to 100%).
+        10. **Research Reports:** Export structured, peer-review-ready technical reports documenting methodology, reproducibility seeds, and metrics.
+        11. **Results History:** Searchable, filterable audit trail of all previous analysis runs with CSV export.
+        12. **System Settings:** Theme preferences (Light / Dark switch), model defaults, and forensic hyperparameters.
+        13. **Help & Documentation:** Complete technical manual and architectural reference.
         """
     )
 

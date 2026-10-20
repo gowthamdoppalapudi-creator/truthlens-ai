@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import joblib
 
-from src.model_registry import get_model
+from src.model_registry import get_model, resolve_model_path
 from src.config import PLOTLY_LAYOUT, COLOR_REAL, COLOR_FAKE, COLOR_ACCENT
 from src.preprocessing import preprocess_text
 
@@ -28,13 +28,16 @@ def get_global_feature_importance(model_id: str, top_n: int = 20) -> dict[str, A
     if not pipeline_path and model_entry.get("type") == "legacy":
         # Handle legacy separate model and vectorizer
         try:
-            clf = joblib.load(model_entry["model_path"])
-            vec = joblib.load(model_entry["vec_path"])
+            m_path = resolve_model_path(model_entry.get("model_path"))
+            v_path = resolve_model_path(model_entry.get("vec_path"))
+            clf = joblib.load(m_path)
+            vec = joblib.load(v_path)
         except Exception as e:
             return {"status": "error", "message": f"Could not load legacy model: {e}"}
     else:
         try:
-            bundle = joblib.load(pipeline_path)
+            p_path = resolve_model_path(pipeline_path)
+            bundle = joblib.load(p_path)
             pipeline = bundle["pipeline"]
             vec = pipeline.named_steps["tfidf"]
             clf = pipeline.named_steps["clf"]

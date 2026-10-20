@@ -185,7 +185,7 @@ with tab_comp:
             "Precision": f"{(float(m_met.get('precision_macro') or 0.95))*100:.2f}%",
             "Recall": f"{(float(m_met.get('recall_macro') or 0.95))*100:.2f}%",
             "ROC-AUC": f"{(float(m_met.get('roc_auc') or 0.96)):.3f}",
-            "N-Gram Scope": m.get("tfidf_config", {}).get("ngram_range", "(1, 2)"),
+            "N-Gram Scope": str(m.get("tfidf_config", {}).get("ngram_range", "(1, 2)")),
         })
     st.dataframe(pd.DataFrame(comp_rows), use_container_width=True, hide_index=True)
 
