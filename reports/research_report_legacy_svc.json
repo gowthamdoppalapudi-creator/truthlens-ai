@@ -1,0 +1,129 @@
+{
+  "experiment_id": "legacy_svc",
+  "timestamp": "2024-01-01T00:00:00",
+  "algorithm_name": "LinearSVC",
+  "metrics": {
+    "accuracy": 0.977,
+    "test_accuracy": 0.977,
+    "train_accuracy": 0.9988,
+    "f1_macro": 0.9768,
+    "precision_macro": 0.9768,
+    "recall_macro": 0.9769,
+    "roc_auc": 0.9972,
+    "confusion_matrix": [
+      [
+        4009,
+        99
+      ],
+      [
+        105,
+        4642
+      ]
+    ],
+    "labels": [
+      "FAKE",
+      "REAL"
+    ],
+    "classification_report": {
+      "FAKE": {
+        "precision": 0.9745,
+        "recall": 0.9759,
+        "f1-score": 0.9752,
+        "support": 4108
+      },
+      "REAL": {
+        "precision": 0.9791,
+        "recall": 0.9779,
+        "f1-score": 0.9785,
+        "support": 4747
+      },
+      "accuracy": 0.977,
+      "macro avg": {
+        "precision": 0.9768,
+        "recall": 0.9769,
+        "f1-score": 0.9768,
+        "support": 8855
+      }
+    },
+    "model_comparison": [
+      {
+        "model": "Linear SVM",
+        "features": "TF-IDF",
+        "train_accuracy": 0.9988,
+        "test_accuracy": 0.9769
+      },
+      {
+        "model": "Logistic Regression",
+        "features": "Bag of Words",
+        "train_accuracy": 0.9998,
+        "test_accuracy": 0.9734
+      },
+      {
+        "model": "Linear SVM",
+        "features": "Bag of Words",
+        "train_accuracy": 1.0,
+        "test_accuracy": 0.9672
+      },
+      {
+        "model": "Logistic Regression",
+        "features": "TF-IDF",
+        "train_accuracy": 0.9765,
+        "test_accuracy": 0.9643
+      },
+      {
+        "model": "Multinomial Naive Bayes",
+        "features": "Bag of Words",
+        "train_accuracy": 0.9432,
+        "test_accuracy": 0.9247
+      },
+      {
+        "model": "Multinomial Naive Bayes",
+        "features": "TF-IDF",
+        "train_accuracy": 0.9076,
+        "test_accuracy": 0.8928
+      }
+    ],
+    "external_validation": {
+      "dataset": "news.csv",
+      "description": "Independent 45,757-article dataset, not used in training or hyperparameter tuning",
+      "accuracy": 0.9741,
+      "confusion_matrix": [
+        [
+          22491,
+          366
+        ],
+        [
+          821,
+          22079
+        ]
+      ]
+    }
+  },
+  "tfidf_config": {
+    "ngram_range": "(1, 2) \u2014 Unigram & Bigram",
+    "sublinear_tf": true,
+    "analyzer": "word"
+  },
+  "dataset_info": {
+    "name": "Combined ISOT & Kaggle Fake/Real News Corpora",
+    "total_rows": 44275,
+    "class_counts": {
+      "FAKE": 20541,
+      "REAL": 23734
+    },
+    "training_sources": [
+      "ISOT Fake/True News dataset",
+      "Fake-or-Real News dataset (Kaggle)"
+    ]
+  },
+  "n_train": 35420,
+  "n_test": 8855,
+  "text_col": "text",
+  "label_col": "label",
+  "class_weight": "balanced",
+  "random_seed": 42,
+  "test_size": 0.2,
+  "training_time": 0.0,
+  "prediction_time": 0.0,
+  "early_detection_results": null
+}

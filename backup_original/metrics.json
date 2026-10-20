@@ -1,0 +1,31 @@
+{
+  "model_type": "LinearSVC (C = 1)",
+  "vectorizer": "TF-IDF",
+  "labels": ["FAKE", "REAL"],
+
+  "test_accuracy": 0.9770,
+  "train_accuracy": 0.9988,
+  "n_train": 35420,
+  "n_test": 8855,
+  "confusion_matrix": [[4009, 99], [105, 4642]],
+
+  "training_dataset_size": 44275,
+  "class_balance": {"FAKE": 20541, "REAL": 23734},
+  "training_sources": ["ISOT Fake/True News dataset", "Fake-or-Real News dataset (Kaggle)"],
+
+  "external_validation": {
+    "dataset": "news.csv",
+    "description": "Independent 45,757-article dataset, not used in training or hyperparameter tuning",
+    "accuracy": 0.9741,
+    "confusion_matrix": [[22491, 366], [821, 22079]]
+  },
+
+  "model_comparison": [
+    {"model": "Linear SVM", "features": "TF-IDF", "train_accuracy": 0.9988, "test_accuracy": 0.9769},
+    {"model": "Logistic Regression", "features": "Bag of Words", "train_accuracy": 0.9998, "test_accuracy": 0.9734},
+    {"model": "Linear SVM", "features": "Bag of Words", "train_accuracy": 1.0000, "test_accuracy": 0.9672},
+    {"model": "Logistic Regression", "features": "TF-IDF", "train_accuracy": 0.9765, "test_accuracy": 0.9643},
+    {"model": "Multinomial Naive Bayes", "features": "Bag of Words", "train_accuracy": 0.9432, "test_accuracy": 0.9247},
+    {"model": "Multinomial Naive Bayes", "features": "TF-IDF", "train_accuracy": 0.9076, "test_accuracy": 0.8928}
+  ]
+}

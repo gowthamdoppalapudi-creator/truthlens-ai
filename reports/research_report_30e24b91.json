@@ -1,0 +1,18 @@
+{
+  "experiment_id": "30e24b91",
+  "timestamp": "2026-10-19T13:11:14.299245",
+  "algorithm_name": "Logistic Regression",
+  "metrics": {},
+  "tfidf_config": {},
+  "dataset_info": {},
+  "n_train": null,
+  "n_test": null,
+  "text_col": "",
+  "label_col": "label",
+  "class_weight": "balanced",
+  "random_seed": null,
+  "test_size": null,
+  "training_time": 0.0,
+  "prediction_time": 0.0,
+  "early_detection_results": null
+}
